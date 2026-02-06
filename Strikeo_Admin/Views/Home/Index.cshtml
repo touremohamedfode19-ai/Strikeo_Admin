@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "Tableau de bord";
+    ViewData["ActivePage"] = "Index";
+}
+
+<div class="dashboard-stats">
+    <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+            <h3>@ViewBag.NbEquipes</h3>
+            <p>Équipes</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🎮</div>
+        <div class="stat-info">
+            <h3>@ViewBag.NbJoueurs</h3>
+            <p>Joueurs</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-info">
+            <h3>@ViewBag.NbTournois</h3>
+            <p>Tournois</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-info">
+            <h3>@ViewBag.NbParticipations</h3>
+            <p>Participations</p>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top: 40px; text-align: center;">
+    <p style="color: var(--text-muted); font-size: 1.1rem;">
+        Bienvenue sur le panneau d'administration de <strong>Strikeo Gestion</strong>.
+    </p>
+    <p style="color: var(--text-muted);">
+        Utilisez le menu de gauche pour gérer vos équipes, joueurs, tournois et participations.
+    </p>
+</div>

@@ -1,0 +1,83 @@
+@{
+    ViewData["Title"] = "Gestion des Participations";
+    ViewData["ActivePage"] = "Participations";
+}
+
+<div class="page-header">
+    <h2>Liste des Participations</h2>
+    <a asp-controller="Participations" asp-action="Ajouter" class="btn-primary">+ Nouvelle Participation</a>
+</div>
+
+<!-- Barre de recherche -->
+<div style="margin-bottom: 20px;">
+    <form method="get" style="display: flex; gap: 10px;">
+        <input type="text" name="filtre" class="form-control" placeholder="Rechercher par statut..." 
+               value="@ViewBag.Filtre" style="max-width: 300px;" />
+        <button type="submit" class="btn-primary">Rechercher</button>
+    </form>
+</div>
+
+<!-- Tableau des participations -->
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Date d'inscription</th>
+            <th>Statut</th>
+            <th>ID Tournoi</th>
+            <th>ID Équipe</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.LesParticipations == null || ((List<Participation>)ViewBag.LesParticipations).Count == 0)
+        {
+            <tr>
+                <td colspan="6" style="text-align: center;">Aucune participation trouvée</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var participation in (List<Participation>)ViewBag.LesParticipations)
+            {
+                <tr>
+                    <td>@participation.Idparticipation</td>
+                    <td>@participation.Date_inscription.ToShortDateString()</td>
+                    <td>
+                        <span class="statut-badge statut-@participation.Statut.Replace(" ", "-")">
+                            @participation.Statut
+                        </span>
+                    </td>
+                    <td>@participation.Idtournoi</td>
+                    <td>@participation.Idequipe</td>
+                    <td>
+                        <a asp-controller="Participations" asp-action="Modifier" asp-route-id="@participation.Idparticipation" class="btn-secondary" style="margin-right: 5px;">Modifier</a>
+                        <a asp-controller="Participations" asp-action="Supprimer" asp-route-id="@participation.Idparticipation" class="btn-danger"
+                           onclick="return confirm('Voulez-vous vraiment supprimer cette participation ?');">Supprimer</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<style>
+    .statut-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    .statut-en-attente {
+        background: rgba(255, 193, 7, 0.2);
+        color: #FFC107;
+    }
+    .statut-confirmee {
+        background: rgba(40, 167, 69, 0.2);
+        color: #28A745;
+    }
+    .statut-annulee {
+        background: rgba(220, 53, 69, 0.2);
+        color: #DC3545;
+    }
+</style>

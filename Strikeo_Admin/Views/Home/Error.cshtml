@@ -1,0 +1,25 @@
+@{
+    ViewData["Title"] = "Erreur";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Erreur - Strikeo Gestion</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-container" style="text-align: center;">
+            <h1 style="color: var(--error-color); font-size: 4rem;">Oops!</h1>
+            <p style="color: var(--text-muted); margin: 20px 0;">Une erreur s'est produite.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn-login" style="display: inline-block; width: auto; padding: 15px 30px;">
+                Retour à l'accueil
+            </a>
+        </div>
+    </div>
+</body>
+</html>

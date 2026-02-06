@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
+  <ItemGroup>
+    <None Remove="Modele\" />
+    <None Remove="Controleur\" />
+    <None Remove="Sql\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Modele\" />
+    <Folder Include="Controleur\" />
+    <Folder Include="Sql\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MySqlClient" Version="5.5.2" />
+    <PackageReference Include="MySql.Data" Version="9.6.0" />
+  </ItemGroup>
+</Project>

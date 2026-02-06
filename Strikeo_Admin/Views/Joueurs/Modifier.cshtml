@@ -1,0 +1,83 @@
+@{
+    ViewData["Title"] = "Modifier un Joueur";
+    ViewData["ActivePage"] = "Joueurs";
+    var joueur = (Joueur)ViewBag.Joueur;
+}
+
+<div class="page-header">
+    <h2>Modifier le Joueur</h2>
+    <a asp-controller="Joueurs" asp-action="Index" class="btn-secondary">← Retour à la liste</a>
+</div>
+
+<div class="form-card">
+    <form asp-controller="Joueurs" asp-action="Modifier" method="post">
+        <input type="hidden" name="id" value="@joueur.Idjoueur" />
+
+        <div class="form-group">
+            <label for="nom">Nom</label>
+            <input type="text" class="form-control" id="nom" name="nom" 
+                   value="@joueur.Nom_joueur" required />
+        </div>
+
+        <div class="form-group">
+            <label for="prenom">Prénom</label>
+            <input type="text" class="form-control" id="prenom" name="prenom" 
+                   value="@joueur.Prenom_joueur" required />
+        </div>
+
+        <div class="form-group">
+            <label for="age">Âge</label>
+            <input type="number" class="form-control" id="age" name="age" 
+                   value="@joueur.Age_joueur" min="1" required />
+        </div>
+
+        <div class="form-group">
+            <label for="mail">Email</label>
+            <input type="email" class="form-control" id="mail" name="mail" 
+                   value="@joueur.Mail_joueur" required />
+        </div>
+
+        <div class="form-group">
+            <label for="tel">Téléphone</label>
+            <input type="text" class="form-control" id="tel" name="telephone" 
+                   value="@joueur.Telephone" required />
+        </div>
+
+        <div class="form-group">
+            <label for="equipe">Équipe</label>
+            <select class="form-control" id="equipe" name="idEquipe" required>
+                @foreach (var equipe in (List<Equipe>)ViewBag.LesEquipes)
+                {
+                    if (equipe.Idequipe == joueur.Idequipe)
+                    {
+                        <option value="@equipe.Idequipe" selected>@equipe.Nom_equipe</option>
+                    }
+                    else
+                    {
+                        <option value="@equipe.Idequipe">@equipe.Nom_equipe</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Enregistrer</button>
+            <a asp-controller="Joueurs" asp-action="Index" class="btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-card {
+        background: var(--background-card);
+        border-radius: 15px;
+        padding: 30px;
+        max-width: 500px;
+        border: 1px solid var(--border-color);
+    }
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+</style>

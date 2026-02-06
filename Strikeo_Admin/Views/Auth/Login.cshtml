@@ -1,0 +1,154 @@
+@{
+    ViewData["Title"] = "Connexion";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Strikeo Gestion</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-container">
+            <!-- Logo -->
+            <div class="login-logo">
+                <img src="~/images/logo.png" alt="Strikeo Gestion Logo" />
+                <h1 class="login-title">STRIKEO GESTION</h1>
+                <p class="login-subtitle">Panneau d'administration</p>
+            </div>
+
+            <!-- Tabs de navigation -->
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab active" data-tab="login">Connexion</button>
+                <button type="button" class="auth-tab" data-tab="signup">Inscription</button>
+            </div>
+
+            <!-- Message d'erreur -->
+            @if (!string.IsNullOrEmpty(ViewBag.MessageErreur))
+            {
+                <div class="error-message">
+                    @ViewBag.MessageErreur
+                </div>
+            }
+
+            <!-- Message de succès -->
+            @if (!string.IsNullOrEmpty(ViewBag.MessageSucces))
+            {
+                <div class="success-message">
+                    @ViewBag.MessageSucces
+                </div>
+            }
+
+            <!-- Formulaire de CONNEXION -->
+            <form asp-controller="Auth" asp-action="Login" method="post" class="login-form auth-form" id="form-login">
+                <div class="form-group">
+                    <label for="identifiant">Identifiant</label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="identifiant" 
+                           name="identifiant"
+                           placeholder="Entrez votre identifiant"
+                           value="@ViewBag.Identifiant"
+                           required />
+                </div>
+
+                <div class="form-group">
+                    <label for="motdepasse">Mot de passe</label>
+                    <input type="password" 
+                           class="form-control" 
+                           id="motdepasse" 
+                           name="motDePasse"
+                           placeholder="Entrez votre mot de passe"
+                           required />
+                </div>
+
+                <button type="submit" class="btn-login">
+                    Se connecter
+                </button>
+            </form>
+
+            <!-- Formulaire d'INSCRIPTION -->
+            <form asp-controller="Auth" asp-action="Signup" method="post" class="login-form auth-form" id="form-signup" style="display: none;">
+                <div class="form-group">
+                    <label for="signup-nom">Nom complet</label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="signup-nom" 
+                           name="nomAdmin"
+                           placeholder="Entrez votre nom"
+                           required />
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-identifiant">Identifiant</label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="signup-identifiant" 
+                           name="newIdentifiant"
+                           placeholder="Choisissez un identifiant"
+                           required />
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-motdepasse">Mot de passe</label>
+                    <input type="password" 
+                           class="form-control" 
+                           id="signup-motdepasse" 
+                           name="newMotDePasse"
+                           placeholder="Choisissez un mot de passe"
+                           required />
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-confirm">Confirmer le mot de passe</label>
+                    <input type="password" 
+                           class="form-control" 
+                           id="signup-confirm" 
+                           name="confirmMotDePasse"
+                           placeholder="Confirmez le mot de passe"
+                           required />
+                </div>
+
+                <button type="submit" class="btn-login">
+                    S'inscrire
+                </button>
+            </form>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <p>&copy; @DateTime.Now.Year Strikeo Gestion - Tous droits réservés</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Gestion des onglets
+        document.querySelectorAll('.auth-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                document.querySelectorAll('.auth-form').forEach(form => form.style.display = 'none');
+                
+                const tabName = this.getAttribute('data-tab');
+                document.getElementById('form-' + tabName).style.display = 'block';
+            });
+        });
+
+        // Activer l'onglet inscription si demandé
+        @if (ViewBag.ShowSignupTab == true)
+        {
+            <text>
+            document.querySelector('[data-tab="signup"]').click();
+            </text>
+        }
+    </script>
+</body>
+</html>

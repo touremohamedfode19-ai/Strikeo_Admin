@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Strikeo Gestion</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="app-body">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="~/images/logo.png" alt="Logo" class="sidebar-logo" />
+        </div>
+        <nav class="sidebar-nav">
+            <a asp-controller="Home" asp-action="Index" class="nav-link @(ViewData["ActivePage"]?.ToString() == "Index" ? "active" : "")">
+                <span class="nav-icon">🏠</span> Tableau de bord
+            </a>
+            <a asp-controller="Equipes" asp-action="Index" class="nav-link @(ViewData["ActivePage"]?.ToString() == "Equipes" ? "active" : "")">
+                <span class="nav-icon">👥</span> Équipes
+            </a>
+            <a asp-controller="Joueurs" asp-action="Index" class="nav-link @(ViewData["ActivePage"]?.ToString() == "Joueurs" ? "active" : "")">
+                <span class="nav-icon">🎮</span> Joueurs
+            </a>
+            <a asp-controller="Tournois" asp-action="Index" class="nav-link @(ViewData["ActivePage"]?.ToString() == "Tournois" ? "active" : "")">
+                <span class="nav-icon">🏆</span> Tournois
+            </a>
+            <a asp-controller="Participations" asp-action="Index" class="nav-link @(ViewData["ActivePage"]?.ToString() == "Participations" ? "active" : "")">
+                <span class="nav-icon">📋</span> Participations
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a asp-controller="Auth" asp-action="Logout" class="btn-logout">
+                <span class="nav-icon">🚪</span> Déconnexion
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-title">
+                <h1>@ViewData["Title"]</h1>
+            </div>
+            <div class="header-user">
+                <span class="user-name">@Context.Session.GetString("AdminNom")</span>
+                <span class="user-avatar">👤</span>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <main class="app-content">
+            @RenderBody()
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; @DateTime.Now.Year Strikeo Gestion - Tous droits réservés</p>
+        </footer>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

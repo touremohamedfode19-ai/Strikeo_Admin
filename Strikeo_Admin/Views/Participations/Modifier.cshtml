@@ -1,0 +1,106 @@
+@{
+    ViewData["Title"] = "Modifier une Participation";
+    ViewData["ActivePage"] = "Participations";
+    var participation = (Participation)ViewBag.Participation;
+}
+
+<div class="page-header">
+    <h2>Modifier la Participation</h2>
+    <a asp-controller="Participations" asp-action="Index" class="btn-secondary">← Retour à la liste</a>
+</div>
+
+<div class="form-card">
+    <form asp-controller="Participations" asp-action="Modifier" method="post">
+        <input type="hidden" name="id" value="@participation.Idparticipation" />
+
+        <div class="form-group">
+            <label for="date">Date d'inscription</label>
+            <input type="date" class="form-control" id="date" name="dateInscription" 
+                   value="@participation.Date_inscription.ToString("yyyy-MM-dd")" required />
+        </div>
+
+        <div class="form-group">
+            <label for="statut">Statut</label>
+            <select class="form-control" id="statut" name="statut" required>
+                @if (participation.Statut == "en attente")
+                {
+                    <option value="en attente" selected>En attente</option>
+                }
+                else
+                {
+                    <option value="en attente">En attente</option>
+                }
+                @if (participation.Statut == "confirmee")
+                {
+                    <option value="confirmee" selected>Confirmée</option>
+                }
+                else
+                {
+                    <option value="confirmee">Confirmée</option>
+                }
+                @if (participation.Statut == "annulee")
+                {
+                    <option value="annulee" selected>Annulée</option>
+                }
+                else
+                {
+                    <option value="annulee">Annulée</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="tournoi">Tournoi</label>
+            <select class="form-control" id="tournoi" name="idTournoi" required>
+                @foreach (var tournoi in (List<Tournoi>)ViewBag.LesTournois)
+                {
+                    if (tournoi.Idtournoi == participation.Idtournoi)
+                    {
+                        <option value="@tournoi.Idtournoi" selected>@tournoi.Designation</option>
+                    }
+                    else
+                    {
+                        <option value="@tournoi.Idtournoi">@tournoi.Designation</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="equipe">Équipe</label>
+            <select class="form-control" id="equipe" name="idEquipe" required>
+                @foreach (var equipe in (List<Equipe>)ViewBag.LesEquipes)
+                {
+                    if (equipe.Idequipe == participation.Idequipe)
+                    {
+                        <option value="@equipe.Idequipe" selected>@equipe.Nom_equipe</option>
+                    }
+                    else
+                    {
+                        <option value="@equipe.Idequipe">@equipe.Nom_equipe</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Enregistrer</button>
+            <a asp-controller="Participations" asp-action="Index" class="btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-card {
+        background: var(--background-card);
+        border-radius: 15px;
+        padding: 30px;
+        max-width: 500px;
+        border: 1px solid var(--border-color);
+    }
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+</style>

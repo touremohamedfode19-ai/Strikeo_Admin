@@ -1,0 +1,60 @@
+@{
+    ViewData["Title"] = "Gestion des Joueurs";
+    ViewData["ActivePage"] = "Joueurs";
+}
+
+<div class="page-header">
+    <h2>Liste des Joueurs</h2>
+    <a asp-controller="Joueurs" asp-action="Ajouter" class="btn-primary">+ Nouveau Joueur</a>
+</div>
+
+<!-- Barre de recherche -->
+<div style="margin-bottom: 20px;">
+    <form method="get" style="display: flex; gap: 10px;">
+        <input type="text" name="filtre" class="form-control" placeholder="Rechercher un joueur..." 
+               value="@ViewBag.Filtre" style="max-width: 300px;" />
+        <button type="submit" class="btn-primary">Rechercher</button>
+    </form>
+</div>
+
+<!-- Tableau des joueurs -->
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Âge</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.LesJoueurs == null || ((List<Joueur>)ViewBag.LesJoueurs).Count == 0)
+        {
+            <tr>
+                <td colspan="7" style="text-align: center;">Aucun joueur trouvé</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var joueur in (List<Joueur>)ViewBag.LesJoueurs)
+            {
+                <tr>
+                    <td>@joueur.Idjoueur</td>
+                    <td>@joueur.Nom_joueur</td>
+                    <td>@joueur.Prenom_joueur</td>
+                    <td>@joueur.Age_joueur</td>
+                    <td>@joueur.Mail_joueur</td>
+                    <td>@joueur.Telephone</td>
+                    <td>
+                        <a asp-controller="Joueurs" asp-action="Modifier" asp-route-id="@joueur.Idjoueur" class="btn-secondary" style="margin-right: 5px;">Modifier</a>
+                        <a asp-controller="Joueurs" asp-action="Supprimer" asp-route-id="@joueur.Idjoueur" class="btn-danger"
+                           onclick="return confirm('Voulez-vous vraiment supprimer ce joueur ?');">Supprimer</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

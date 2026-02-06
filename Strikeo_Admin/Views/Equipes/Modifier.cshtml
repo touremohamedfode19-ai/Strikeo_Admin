@@ -1,0 +1,48 @@
+@{
+    ViewData["Title"] = "Modifier une Équipe";
+    ViewData["ActivePage"] = "Equipes";
+    var equipe = (Equipe)ViewBag.Equipe;
+}
+
+<div class="page-header">
+    <h2>Modifier l'Équipe</h2>
+    <a asp-controller="Equipes" asp-action="Index" class="btn-secondary">← Retour à la liste</a>
+</div>
+
+<div class="form-card">
+    <form asp-controller="Equipes" asp-action="Modifier" method="post">
+        <input type="hidden" name="id" value="@equipe.Idequipe" />
+
+        <div class="form-group">
+            <label for="nom">Nom de l'équipe</label>
+            <input type="text" class="form-control" id="nom" name="nomEquipe" 
+                   value="@equipe.Nom_equipe" required />
+        </div>
+
+        <div class="form-group">
+            <label for="nb">Nombre de joueurs</label>
+            <input type="number" class="form-control" id="nb" name="nbJoueur" 
+                   value="@equipe.Nb_joueur" min="1" required />
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Enregistrer</button>
+            <a asp-controller="Equipes" asp-action="Index" class="btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-card {
+        background: var(--background-card);
+        border-radius: 15px;
+        padding: 30px;
+        max-width: 500px;
+        border: 1px solid var(--border-color);
+    }
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+</style>

@@ -1,0 +1,54 @@
+@{
+    ViewData["Title"] = "Gestion des Équipes";
+    ViewData["ActivePage"] = "Equipes";
+}
+
+<div class="page-header">
+    <h2>Liste des Équipes</h2>
+    <a asp-controller="Equipes" asp-action="Ajouter" class="btn-primary">+ Nouvelle Équipe</a>
+</div>
+
+<!-- Barre de recherche -->
+<div style="margin-bottom: 20px;">
+    <form method="get" style="display: flex; gap: 10px;">
+        <input type="text" name="filtre" class="form-control" placeholder="Rechercher une équipe..." 
+               value="@ViewBag.Filtre" style="max-width: 300px;" />
+        <button type="submit" class="btn-primary">Rechercher</button>
+    </form>
+</div>
+
+<!-- Tableau des équipes -->
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nom de l'équipe</th>
+            <th>Nombre de joueurs</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.LesEquipes == null || ((List<Equipe>)ViewBag.LesEquipes).Count == 0)
+        {
+            <tr>
+                <td colspan="4" style="text-align: center;">Aucune équipe trouvée</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var equipe in (List<Equipe>)ViewBag.LesEquipes)
+            {
+                <tr>
+                    <td>@equipe.Idequipe</td>
+                    <td>@equipe.Nom_equipe</td>
+                    <td>@equipe.Nb_joueur</td>
+                    <td>
+                        <a asp-controller="Equipes" asp-action="Modifier" asp-route-id="@equipe.Idequipe" class="btn-secondary" style="margin-right: 5px;">Modifier</a>
+                        <a asp-controller="Equipes" asp-action="Supprimer" asp-route-id="@equipe.Idequipe" class="btn-danger" 
+                           onclick="return confirm('Voulez-vous vraiment supprimer cette équipe ?');">Supprimer</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

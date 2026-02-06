@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "Gestion des Tournois";
+    ViewData["ActivePage"] = "Tournois";
+}
+
+<div class="page-header">
+    <h2>Liste des Tournois</h2>
+    <a asp-controller="Tournois" asp-action="Ajouter" class="btn-primary">+ Nouveau Tournoi</a>
+</div>
+
+<!-- Barre de recherche -->
+<div style="margin-bottom: 20px;">
+    <form method="get" style="display: flex; gap: 10px;">
+        <input type="text" name="filtre" class="form-control" placeholder="Rechercher un tournoi..." 
+               value="@ViewBag.Filtre" style="max-width: 300px;" />
+        <button type="submit" class="btn-primary">Rechercher</button>
+    </form>
+</div>
+
+<!-- Tableau des tournois -->
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Désignation</th>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.LesTournois == null || ((List<Tournoi>)ViewBag.LesTournois).Count == 0)
+        {
+            <tr>
+                <td colspan="5" style="text-align: center;">Aucun tournoi trouvé</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var tournoi in (List<Tournoi>)ViewBag.LesTournois)
+            {
+                <tr>
+                    <td>@tournoi.Idtournoi</td>
+                    <td>@tournoi.Designation</td>
+                    <td>@tournoi.Date_tournoi.ToShortDateString()</td>
+                    <td>@(tournoi.Description?.Length > 50 ? tournoi.Description.Substring(0, 50) + "..." : tournoi.Description)</td>
+                    <td>
+                        <a asp-controller="Tournois" asp-action="Modifier" asp-route-id="@tournoi.Idtournoi" class="btn-secondary" style="margin-right: 5px;">Modifier</a>
+                        <a asp-controller="Tournois" asp-action="Supprimer" asp-route-id="@tournoi.Idtournoi" class="btn-danger"
+                           onclick="return confirm('Voulez-vous vraiment supprimer ce tournoi ?');">Supprimer</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
