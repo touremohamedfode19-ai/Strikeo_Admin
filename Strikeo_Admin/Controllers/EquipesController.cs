@@ -22,8 +22,17 @@ namespace Strikeo_Admin.Controllers
             if (!EstConnecte()) return RedirectToAction("Login", "Auth");
 
             Modele monModele = new Modele(serveur, bdd, user, mdp);
-            ViewBag.LesEquipes = monModele.SelectAllEquipes(filtre);
+            var lesEquipes = monModele.SelectAllEquipes(filtre);
+            ViewBag.LesEquipes = lesEquipes;
             ViewBag.Filtre = filtre;
+
+            // Calculer le nombre de joueurs actuels par équipe
+            Dictionary<int, int> joueursParEquipe = new Dictionary<int, int>();
+            foreach (var equipe in lesEquipes)
+            {
+                joueursParEquipe[equipe.Idequipe] = monModele.CountJoueursByEquipe(equipe.Idequipe);
+            }
+            ViewBag.JoueursParEquipe = joueursParEquipe;
 
             return View();
         }

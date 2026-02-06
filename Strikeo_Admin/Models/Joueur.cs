@@ -1,4 +1,4 @@
-﻿// Importation de la bibliothèque System qui contient les classes de base .NET
+// Importation de la bibliothèque System qui contient les classes de base .NET
 using System;
 
 // Définition du namespace pour organiser le code du projet
@@ -28,8 +28,8 @@ namespace Strikeo_Admin
         // Numéro de téléphone du joueur (varchar 20 dans la BDD)
         private string telephone;
 
-        // Clé étrangère vers la table equipe - identifie l'équipe du joueur
-        private int idequipe;
+        // Clé étrangère vers la table equipe - identifie l'équipe du joueur (optionnel)
+        private int? idequipe;
 
         // ===== PROPRIÉTÉS PUBLIQUES (GETTERS/SETTERS) =====
         // Permettent d'accéder et modifier les attributs privés de manière contrôlée
@@ -76,8 +76,8 @@ namespace Strikeo_Admin
             set { telephone = value; }
         }
 
-        // Propriété pour la clé étrangère (lien vers l'équipe)
-        public int Idequipe
+        // Propriété pour la clé étrangère (lien vers l'équipe - optionnel)
+        public int? Idequipe
         {
             get { return idequipe; }
             set { idequipe = value; }
@@ -95,7 +95,7 @@ namespace Strikeo_Admin
         // Constructeur avec tous les paramètres (incluant l'id)
         // Utilisé quand on récupère un joueur depuis la BDD
         public Joueur(int idjoueur, string nom_joueur, string prenom_joueur,
-                      int age_joueur, string mail_joueur, string telephone, int idequipe)
+                      int age_joueur, string mail_joueur, string telephone, int? idequipe)
         {
             // Affectation de chaque paramètre à l'attribut correspondant
             this.idjoueur = idjoueur;
@@ -104,13 +104,13 @@ namespace Strikeo_Admin
             this.age_joueur = age_joueur;
             this.mail_joueur = mail_joueur;
             this.telephone = telephone;
-            this.idequipe = idequipe;       // Clé étrangère vers l'équipe
+            this.idequipe = idequipe;       // Clé étrangère vers l'équipe (optionnelle)
         }
 
         // Constructeur sans l'id (utile pour l'insertion en BDD)
         // L'id sera généré automatiquement par MySQL (AUTO_INCREMENT)
         public Joueur(string nom_joueur, string prenom_joueur,
-                      int age_joueur, string mail_joueur, string telephone, int idequipe)
+                      int age_joueur, string mail_joueur, string telephone, int? idequipe)
         {
             this.nom_joueur = nom_joueur;
             this.prenom_joueur = prenom_joueur;

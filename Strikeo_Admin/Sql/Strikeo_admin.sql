@@ -16,7 +16,7 @@ create table joueur (
     mail_joueur varchar(50) not null,
     telephone varchar(20) not null,
 
-    idequipe int not null,
+    idequipe int null,
     foreign key (idequipe) references equipe (idequipe)
  );
 

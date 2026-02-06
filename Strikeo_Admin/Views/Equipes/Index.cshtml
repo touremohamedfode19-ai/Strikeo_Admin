@@ -23,7 +23,9 @@
         <tr>
             <th>ID</th>
             <th>Nom de l'équipe</th>
-            <th>Nombre de joueurs</th>
+            <th>Capacité max</th>
+            <th>Joueurs actuels</th>
+            <th>Places disponibles</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -31,17 +33,32 @@
         @if (ViewBag.LesEquipes == null || ((List<Equipe>)ViewBag.LesEquipes).Count == 0)
         {
             <tr>
-                <td colspan="4" style="text-align: center;">Aucune équipe trouvée</td>
+                <td colspan="6" style="text-align: center;">Aucune équipe trouvée</td>
             </tr>
         }
         else
         {
+            var joueursParEquipe = (Dictionary<int, int>)ViewBag.JoueursParEquipe;
             @foreach (var equipe in (List<Equipe>)ViewBag.LesEquipes)
             {
+                int joueursActuels = joueursParEquipe.ContainsKey(equipe.Idequipe) ? joueursParEquipe[equipe.Idequipe] : 0;
+                int placesDisponibles = equipe.Nb_joueur - joueursActuels;
+                bool estComplet = placesDisponibles <= 0;
                 <tr>
                     <td>@equipe.Idequipe</td>
                     <td>@equipe.Nom_equipe</td>
                     <td>@equipe.Nb_joueur</td>
+                    <td>@joueursActuels</td>
+                    <td>
+                        @if (estComplet)
+                        {
+                            <span class="badge-danger">Complet</span>
+                        }
+                        else
+                        {
+                            <span class="badge-success">@placesDisponibles place(s)</span>
+                        }
+                    </td>
                     <td>
                         <a asp-controller="Equipes" asp-action="Modifier" asp-route-id="@equipe.Idequipe" class="btn-secondary" style="margin-right: 5px;">Modifier</a>
                         <a asp-controller="Equipes" asp-action="Supprimer" asp-route-id="@equipe.Idequipe" class="btn-danger" 

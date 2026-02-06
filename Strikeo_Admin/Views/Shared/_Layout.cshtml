@@ -45,8 +45,20 @@
                 <h1>@ViewData["Title"]</h1>
             </div>
             <div class="header-user">
-                <span class="user-name">@Context.Session.GetString("AdminNom")</span>
-                <span class="user-avatar">👤</span>
+                <button class="user-dropdown-btn" onclick="toggleUserDropdown()">
+                    <span class="user-name">@Context.Session.GetString("AdminNom")</span>
+                    <span class="user-avatar">👤</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="user-dropdown-menu" id="userDropdown">
+                    <a asp-controller="Auth" asp-action="Logout" class="dropdown-item">
+                        🚪 Déconnexion
+                    </a>
+                    <a href="javascript:void(0)" class="dropdown-item danger" onclick="confirmDeleteAccount()">
+                        🗑️ Supprimer le compte
+                    </a>
+                </div>
+                <form id="deleteAccountForm" asp-controller="Auth" asp-action="DeleteAccount" method="post" style="display:none;"></form>
             </div>
         </header>
 
@@ -64,6 +76,28 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        function toggleUserDropdown() {
+            var dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Fermer le menu si on clique ailleurs
+        document.addEventListener('click', function(event) {
+            var dropdown = document.getElementById('userDropdown');
+            var button = document.querySelector('.user-dropdown-btn');
+            if (dropdown && button && !button.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function confirmDeleteAccount() {
+            if (confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')) {
+                document.getElementById('deleteAccountForm').submit();
+            }
+        }
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

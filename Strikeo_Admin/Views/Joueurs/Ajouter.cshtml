@@ -9,6 +9,11 @@
 </div>
 
 <div class="form-card">
+    @if (ViewBag.MessageErreur != null)
+    {
+        <div class="alert alert-danger">@ViewBag.MessageErreur</div>
+    }
+    
     <form asp-controller="Joueurs" asp-action="Ajouter" method="post">
         <div class="form-group">
             <label for="nom">Nom</label>
@@ -36,12 +41,25 @@
         </div>
 
         <div class="form-group">
-            <label for="equipe">Équipe</label>
-            <select class="form-control" id="equipe" name="idEquipe" required>
-                <option value="">-- Sélectionner une équipe --</option>
+            <label for="equipe">Équipe (optionnel)</label>
+            <select class="form-control" id="equipe" name="idEquipe">
+                <option value="">-- Sans équipe --</option>
+                @{
+                    var placesDisponibles = (Dictionary<int, int>)ViewBag.PlacesDisponibles;
+                }
                 @foreach (var equipe in (List<Equipe>)ViewBag.LesEquipes)
                 {
-                    <option value="@equipe.Idequipe">@equipe.Nom_equipe</option>
+                    int places = placesDisponibles.ContainsKey(equipe.Idequipe) ? placesDisponibles[equipe.Idequipe] : 0;
+                    bool estComplet = places <= 0;
+                    
+                    if (estComplet)
+                    {
+                        <option value="@equipe.Idequipe" disabled>@equipe.Nom_equipe (Complète)</option>
+                    }
+                    else
+                    {
+                        <option value="@equipe.Idequipe">@equipe.Nom_equipe (@places place(s) disponible(s))</option>
+                    }
                 }
             </select>
         </div>

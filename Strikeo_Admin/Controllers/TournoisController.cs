@@ -38,16 +38,28 @@ namespace Strikeo_Admin.Controllers
 
         // ===== POST : Traiter l'ajout =====
         [HttpPost]
-        public IActionResult Ajouter(string designation, DateTime dateTournoi, string description)
+        public IActionResult Ajouter(string designation, DateTime dateTournoi, string? description)
         {
             if (!EstConnecte()) return RedirectToAction("Login", "Auth");
 
-            Tournoi nouveauTournoi = new Tournoi(designation, dateTournoi, description);
+            try
+            {
+                // Gérer le cas où description est null
+                string desc = description ?? "";
+                
+                Tournoi nouveauTournoi = new Tournoi(designation, dateTournoi, desc);
 
-            Modele monModele = new Modele(serveur, bdd, user, mdp);
-            monModele.InsertTournoi(nouveauTournoi);
+                Modele monModele = new Modele(serveur, bdd, user, mdp);
+                monModele.InsertTournoi(nouveauTournoi);
 
-            return RedirectToAction("Index");
+                TempData["MessageSucces"] = "Tournoi ajouté avec succès !";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.MessageErreur = "Erreur lors de l'ajout : " + ex.Message;
+                return View();
+            }
         }
 
         // ===== GET : Formulaire de modification =====

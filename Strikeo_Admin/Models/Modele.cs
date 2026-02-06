@@ -259,15 +259,20 @@ namespace Strikeo_Admin
                 uneCmde.Parameters.AddWithValue("@age", unJoueur.Age_joueur);
                 uneCmde.Parameters.AddWithValue("@mail", unJoueur.Mail_joueur);
                 uneCmde.Parameters.AddWithValue("@tel", unJoueur.Telephone);
-                // Clé étrangère vers l'équipe
-                uneCmde.Parameters.AddWithValue("@idequipe", unJoueur.Idequipe);
+                // Clé étrangère vers l'équipe (peut être null)
+                uneCmde.Parameters.AddWithValue("@idequipe", unJoueur.Idequipe.HasValue ? (object)unJoueur.Idequipe.Value : DBNull.Value);
 
                 uneCmde.ExecuteNonQuery();
-                this.maConnexion.Close();
             }
             catch (Exception exp)
             {
-                Debug.WriteLine("Erreur execution : " + requete);
+                Debug.WriteLine("Erreur execution : " + requete + " - " + exp.Message);
+                throw;
+            }
+            finally
+            {
+                if (this.maConnexion.State == System.Data.ConnectionState.Open)
+                    this.maConnexion.Close();
             }
         }
 
@@ -314,7 +319,8 @@ namespace Strikeo_Admin
                 uneCmde.Parameters.AddWithValue("@age", unJoueur.Age_joueur);
                 uneCmde.Parameters.AddWithValue("@mail", unJoueur.Mail_joueur);
                 uneCmde.Parameters.AddWithValue("@tel", unJoueur.Telephone);
-                uneCmde.Parameters.AddWithValue("@idequipe", unJoueur.Idequipe);
+                // Clé étrangère vers l'équipe (peut être null)
+                uneCmde.Parameters.AddWithValue("@idequipe", unJoueur.Idequipe.HasValue ? (object)unJoueur.Idequipe.Value : DBNull.Value);
 
                 uneCmde.ExecuteNonQuery();
                 this.maConnexion.Close();
@@ -370,7 +376,7 @@ namespace Strikeo_Admin
                                 unReader.GetInt32(3),      // age_joueur
                                 unReader.GetString(4),     // mail_joueur
                                 unReader.GetString(5),     // telephone
-                                unReader.GetInt32(6)       // idequipe (clé étrangère)
+                                unReader.IsDBNull(6) ? null : unReader.GetInt32(6)  // idequipe (clé étrangère, peut être null)
                             );
                             lesJoueurs.Add(unJoueur);
                         }
@@ -406,17 +412,26 @@ namespace Strikeo_Admin
                 uneCmde = this.maConnexion.CreateCommand();
                 uneCmde.CommandText = requete;
 
-                uneCmde.Parameters.AddWithValue("@designation", unTournoi.Designation);
-                // Pour les dates, MySQL accepte le format DateTime de C#
+                // Gérer les valeurs nulles
+                uneCmde.Parameters.AddWithValue("@designation", unTournoi.Designation ?? "");
                 uneCmde.Parameters.AddWithValue("@date", unTournoi.Date_tournoi);
-                uneCmde.Parameters.AddWithValue("@description", unTournoi.Description);
+                uneCmde.Parameters.AddWithValue("@description", unTournoi.Description ?? "");
 
-                uneCmde.ExecuteNonQuery();
-                this.maConnexion.Close();
+                int rowsAffected = uneCmde.ExecuteNonQuery();
+                if (rowsAffected == 0)
+                {
+                    throw new Exception("Aucune ligne insérée dans la base de données");
+                }
             }
             catch (Exception exp)
             {
-                Debug.WriteLine("Erreur execution : " + requete);
+                Debug.WriteLine("Erreur execution : " + requete + " - " + exp.Message);
+                throw;
+            }
+            finally
+            {
+                if (this.maConnexion.State == System.Data.ConnectionState.Open)
+                    this.maConnexion.Close();
             }
         }
 
@@ -506,12 +521,12 @@ namespace Strikeo_Admin
                     {
                         while (unReader.Read())
                         {
-                            // Création d'un objet Tournoi
+                            // Création d'un objet Tournoi (gérer les valeurs NULL)
                             Tournoi unTournoi = new Tournoi(
                                 unReader.GetInt32(0),      // idtournoi
-                                unReader.GetString(1),     // designation
-                                unReader.GetDateTime(2),   // date_tournoi (GetDateTime pour les dates)
-                                unReader.GetString(3)      // description
+                                unReader.IsDBNull(1) ? "" : unReader.GetString(1),     // designation
+                                unReader.GetDateTime(2),   // date_tournoi
+                                unReader.IsDBNull(3) ? "" : unReader.GetString(3)      // description (peut être NULL)
                             );
                             lesTournois.Add(unTournoi);
                         }
@@ -519,7 +534,7 @@ namespace Strikeo_Admin
                 }
                 catch (Exception exp)
                 {
-                    Debug.WriteLine("Aucun tournoi à extraire");
+                    Debug.WriteLine("Erreur lecture tournois: " + exp.Message);
                 }
 
                 this.maConnexion.Close();
@@ -555,11 +570,16 @@ namespace Strikeo_Admin
                 uneCmde.Parameters.AddWithValue("@idequipe", uneParticipation.Idequipe);
 
                 uneCmde.ExecuteNonQuery();
-                this.maConnexion.Close();
             }
             catch (Exception exp)
             {
-                Debug.WriteLine("Erreur execution : " + requete);
+                Debug.WriteLine("Erreur execution : " + requete + " - " + exp.Message);
+                throw;
+            }
+            finally
+            {
+                if (this.maConnexion.State == System.Data.ConnectionState.Open)
+                    this.maConnexion.Close();
             }
         }
 
@@ -766,7 +786,7 @@ namespace Strikeo_Admin
                             unReader.GetInt32(3),      // age_joueur
                             unReader.GetString(4),     // mail_joueur
                             unReader.GetString(5),     // telephone
-                            unReader.GetInt32(6)       // idequipe
+                            unReader.IsDBNull(6) ? null : unReader.GetInt32(6)  // idequipe (peut être null)
                         );
                     }
                 }
@@ -1035,7 +1055,7 @@ namespace Strikeo_Admin
                                 unReader.GetInt32(3),
                                 unReader.GetString(4),
                                 unReader.GetString(5),
-                                unReader.GetInt32(6)
+                                unReader.IsDBNull(6) ? null : unReader.GetInt32(6)  // idequipe (peut être null)
                             );
                             lesJoueurs.Add(unJoueur);
                         }

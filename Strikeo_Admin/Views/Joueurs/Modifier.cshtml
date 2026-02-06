@@ -10,6 +10,11 @@
 </div>
 
 <div class="form-card">
+    @if (ViewBag.MessageErreur != null)
+    {
+        <div class="alert alert-danger">@ViewBag.MessageErreur</div>
+    }
+    
     <form asp-controller="Joueurs" asp-action="Modifier" method="post">
         <input type="hidden" name="id" value="@joueur.Idjoueur" />
 
@@ -44,17 +49,37 @@
         </div>
 
         <div class="form-group">
-            <label for="equipe">Équipe</label>
-            <select class="form-control" id="equipe" name="idEquipe" required>
+            <label for="equipe">Équipe (optionnel)</label>
+            <select class="form-control" id="equipe" name="idEquipe">
+                @{
+                    var placesDisponibles = (Dictionary<int, int>)ViewBag.PlacesDisponibles;
+                    bool sansEquipe = !joueur.Idequipe.HasValue;
+                }
+                @if (sansEquipe)
+                {
+                    <option value="" selected>-- Sans équipe --</option>
+                }
+                else
+                {
+                    <option value="">-- Sans équipe --</option>
+                }
                 @foreach (var equipe in (List<Equipe>)ViewBag.LesEquipes)
                 {
-                    if (equipe.Idequipe == joueur.Idequipe)
+                    int places = placesDisponibles.ContainsKey(equipe.Idequipe) ? placesDisponibles[equipe.Idequipe] : 0;
+                    bool estComplet = places <= 0;
+                    bool estEquipeActuelle = joueur.Idequipe.HasValue && equipe.Idequipe == joueur.Idequipe.Value;
+                    
+                    if (estEquipeActuelle)
                     {
-                        <option value="@equipe.Idequipe" selected>@equipe.Nom_equipe</option>
+                        <option value="@equipe.Idequipe" selected>@equipe.Nom_equipe (Équipe actuelle - @places place(s))</option>
+                    }
+                    else if (estComplet)
+                    {
+                        <option value="@equipe.Idequipe" disabled>@equipe.Nom_equipe (Complète)</option>
                     }
                     else
                     {
-                        <option value="@equipe.Idequipe">@equipe.Nom_equipe</option>
+                        <option value="@equipe.Idequipe">@equipe.Nom_equipe (@places place(s) disponible(s))</option>
                     }
                 }
             </select>

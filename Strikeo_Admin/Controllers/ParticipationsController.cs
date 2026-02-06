@@ -47,12 +47,23 @@ namespace Strikeo_Admin.Controllers
         {
             if (!EstConnecte()) return RedirectToAction("Login", "Auth");
 
-            Participation nouvelleParticipation = new Participation(dateInscription, statut, idTournoi, idEquipe);
+            try
+            {
+                Participation nouvelleParticipation = new Participation(dateInscription, statut, idTournoi, idEquipe);
 
-            Modele monModele = new Modele(serveur, bdd, user, mdp);
-            monModele.InsertParticipation(nouvelleParticipation);
+                Modele monModele = new Modele(serveur, bdd, user, mdp);
+                monModele.InsertParticipation(nouvelleParticipation);
 
-            return RedirectToAction("Index");
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                Modele monModele = new Modele(serveur, bdd, user, mdp);
+                ViewBag.LesTournois = monModele.SelectAllTournois("");
+                ViewBag.LesEquipes = monModele.SelectAllEquipes("");
+                ViewBag.MessageErreur = "Erreur lors de l'ajout : " + ex.Message;
+                return View();
+            }
         }
 
         // ===== GET : Formulaire de modification =====

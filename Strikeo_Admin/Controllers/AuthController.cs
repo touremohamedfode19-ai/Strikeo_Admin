@@ -115,5 +115,33 @@ namespace Strikeo_Admin.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
+
+        // ===== POST : Supprimer le compte =====
+        [HttpPost]
+        public IActionResult DeleteAccount()
+        {
+            int? adminId = HttpContext.Session.GetInt32("AdminId");
+            
+            if (adminId == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            try
+            {
+                Modele monModele = new Modele(serveur, bdd, user, mdp);
+                monModele.DeleteAdmin(adminId.Value);
+                
+                HttpContext.Session.Clear();
+                
+                TempData["MessageSucces"] = "Votre compte a été supprimé avec succès.";
+                return RedirectToAction("Login");
+            }
+            catch (Exception ex)
+            {
+                TempData["MessageErreur"] = "Erreur lors de la suppression : " + ex.Message;
+                return RedirectToAction("Index", "Home");
+            }
+        }
     }
 }

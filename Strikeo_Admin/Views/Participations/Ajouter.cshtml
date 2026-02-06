@@ -9,6 +9,11 @@
 </div>
 
 <div class="form-card">
+    @if (ViewBag.MessageErreur != null)
+    {
+        <div class="alert alert-danger">@ViewBag.MessageErreur</div>
+    }
+    
     <form asp-controller="Participations" asp-action="Ajouter" method="post">
         <div class="form-group">
             <label for="date">Date d'inscription</label>
