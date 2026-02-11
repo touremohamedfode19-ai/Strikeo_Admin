@@ -110,25 +110,36 @@ namespace Strikeo_Admin
         // Paramètre : l'identifiant de l'équipe à supprimer
         public void DeleteEquipe(int idequipe)
         {
-            // Requête SQL de suppression avec paramètre nommé
-            string requete = "DELETE FROM equipe WHERE idequipe = @id;";
             MySqlCommand uneCmde = null;
             try
             {
                 this.maConnexion.Open();
                 uneCmde = this.maConnexion.CreateCommand();
-                uneCmde.CommandText = requete;
 
-                // Liaison du paramètre @id avec la valeur passée en argument
+                // 1. Supprimer toutes les participations de cette équipe
+                uneCmde.CommandText = "DELETE FROM participation WHERE idequipe = @id;";
                 uneCmde.Parameters.AddWithValue("@id", idequipe);
-
-                // Exécution de la suppression
                 uneCmde.ExecuteNonQuery();
+
+                // 2. Mettre à NULL l'équipe des joueurs appartenant à cette équipe
+                uneCmde.CommandText = "UPDATE joueur SET idequipe = NULL WHERE idequipe = @id;";
+                uneCmde.ExecuteNonQuery();
+
+                // 3. Supprimer l'équipe
+                uneCmde.CommandText = "DELETE FROM equipe WHERE idequipe = @id;";
+                uneCmde.ExecuteNonQuery();
+
                 this.maConnexion.Close();
             }
             catch (Exception exp)
             {
-                Debug.WriteLine("Erreur execution : " + requete);
+                Debug.WriteLine("Erreur execution DeleteEquipe : " + exp.Message);
+                throw;
+            }
+            finally
+            {
+                if (this.maConnexion.State == System.Data.ConnectionState.Open)
+                    this.maConnexion.Close();
             }
         }
 
@@ -438,22 +449,32 @@ namespace Strikeo_Admin
         // ----- DELETE : Supprimer un tournoi par son id -----
         public void DeleteTournoi(int idtournoi)
         {
-            string requete = "DELETE FROM tournoi WHERE idtournoi = @id;";
             MySqlCommand uneCmde = null;
             try
             {
                 this.maConnexion.Open();
                 uneCmde = this.maConnexion.CreateCommand();
-                uneCmde.CommandText = requete;
 
+                // 1. Supprimer toutes les participations de ce tournoi
+                uneCmde.CommandText = "DELETE FROM participation WHERE idtournoi = @id;";
                 uneCmde.Parameters.AddWithValue("@id", idtournoi);
-
                 uneCmde.ExecuteNonQuery();
+
+                // 2. Supprimer le tournoi
+                uneCmde.CommandText = "DELETE FROM tournoi WHERE idtournoi = @id;";
+                uneCmde.ExecuteNonQuery();
+
                 this.maConnexion.Close();
             }
             catch (Exception exp)
             {
-                Debug.WriteLine("Erreur execution : " + requete);
+                Debug.WriteLine("Erreur execution DeleteTournoi : " + exp.Message);
+                throw;
+            }
+            finally
+            {
+                if (this.maConnexion.State == System.Data.ConnectionState.Open)
+                    this.maConnexion.Close();
             }
         }
 

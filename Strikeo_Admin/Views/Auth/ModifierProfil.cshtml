@@ -1,0 +1,67 @@
+@{
+    ViewData["Title"] = "Modifier mon profil";
+    ViewData["ActivePage"] = "";
+    var admin = ViewBag.Admin as Admin;
+}
+
+<div class="page-header">
+    <h2>Modifier mon profil</h2>
+</div>
+
+@if (ViewBag.MessageErreur != null)
+{
+    <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        @ViewBag.MessageErreur
+    </div>
+}
+
+@if (TempData["MessageSucces"] != null)
+{
+    <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        @TempData["MessageSucces"]
+    </div>
+}
+
+<div class="form-container" style="max-width: 600px;">
+    <form method="post" asp-controller="Auth" asp-action="ModifierProfil">
+        <!-- Nom -->
+        <div class="form-group">
+            <label for="nomAdmin">Nom *</label>
+            <input type="text" id="nomAdmin" name="nomAdmin" class="form-control" 
+                   value="@admin?.Nom_admin" required placeholder="Votre nom" />
+        </div>
+
+        <!-- Identifiant (non modifiable) -->
+        <div class="form-group">
+            <label for="identifiant">Identifiant</label>
+            <input type="text" id="identifiant" class="form-control" 
+                   value="@admin?.Identifiant" disabled 
+                   style="background-color: #555; color: #999; cursor: not-allowed;" />
+            <input type="hidden" name="identifiant" value="@admin?.Identifiant" />
+        </div>
+
+        <p style="color: #888; font-size: 14px; margin-bottom: 15px; margin-top: 25px;">
+            Laissez les champs mot de passe vides si vous ne souhaitez pas le modifier.
+        </p>
+
+        <!-- Nouveau mot de passe -->
+        <div class="form-group">
+            <label for="nouveauMotDePasse">Nouveau mot de passe</label>
+            <input type="password" id="nouveauMotDePasse" name="nouveauMotDePasse" class="form-control" 
+                   placeholder="Nouveau mot de passe (optionnel)" />
+        </div>
+
+        <!-- Confirmer mot de passe -->
+        <div class="form-group">
+            <label for="confirmMotDePasse">Confirmer le mot de passe</label>
+            <input type="password" id="confirmMotDePasse" name="confirmMotDePasse" class="form-control" 
+                   placeholder="Confirmer le nouveau mot de passe" />
+        </div>
+
+        <!-- Boutons -->
+        <div class="form-actions" style="margin-top: 30px; display: flex; gap: 15px;">
+            <button type="submit" class="btn-primary">Enregistrer</button>
+            <a asp-controller="Home" asp-action="Index" class="btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>

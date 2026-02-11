@@ -116,6 +116,131 @@ namespace Strikeo_Admin.Controllers
             return RedirectToAction("Login");
         }
 
+        // ===== GET : Afficher le formulaire de modification du profil =====
+        [HttpGet]
+        public IActionResult ModifierProfil()
+        {
+            int? adminId = HttpContext.Session.GetInt32("AdminId");
+            
+            if (adminId == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            try
+            {
+                Modele monModele = new Modele(serveur, bdd, user, mdp);
+                Admin admin = monModele.SelectAdminById(adminId.Value);
+                
+                if (admin == null)
+                {
+                    return RedirectToAction("Login");
+                }
+
+                ViewBag.Admin = admin;
+                return View();
+            }
+            catch (Exception ex)
+            {
+                TempData["MessageErreur"] = "Erreur lors du chargement du profil : " + ex.Message;
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        // ===== POST : Traiter la modification du profil =====
+        [HttpPost]
+        public IActionResult ModifierProfil(string nomAdmin, string identifiant, string nouveauMotDePasse, string confirmMotDePasse)
+        {
+            int? adminId = HttpContext.Session.GetInt32("AdminId");
+            
+            if (adminId == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            // Validation des champs obligatoires
+            if (string.IsNullOrEmpty(nomAdmin) || string.IsNullOrEmpty(identifiant))
+            {
+                ViewBag.MessageErreur = "Le nom et l'identifiant sont obligatoires.";
+                return RechargerProfil(adminId.Value);
+            }
+
+            // Si un nouveau mot de passe est fourni, vérifier la confirmation
+            if (!string.IsNullOrEmpty(nouveauMotDePasse))
+            {
+                if (nouveauMotDePasse != confirmMotDePasse)
+                {
+                    ViewBag.MessageErreur = "Les mots de passe ne correspondent pas.";
+                    return RechargerProfil(adminId.Value);
+                }
+
+                if (nouveauMotDePasse.Length < 4)
+                {
+                    ViewBag.MessageErreur = "Le mot de passe doit contenir au moins 4 caractères.";
+                    return RechargerProfil(adminId.Value);
+                }
+            }
+
+            try
+            {
+                Modele monModele = new Modele(serveur, bdd, user, mdp);
+                Admin admin = monModele.SelectAdminById(adminId.Value);
+
+                if (admin == null)
+                {
+                    return RedirectToAction("Login");
+                }
+
+                // Vérifier si l'identifiant est déjà utilisé par un autre admin
+                if (identifiant != admin.Identifiant)
+                {
+                    List<Admin> admins = monModele.SelectAllAdmins(identifiant);
+                    if (admins != null && admins.Any(a => a.Identifiant == identifiant && a.Idadmin != adminId.Value))
+                    {
+                        ViewBag.MessageErreur = "Cet identifiant est déjà utilisé par un autre compte.";
+                        return RechargerProfil(adminId.Value);
+                    }
+                }
+
+                // Mettre à jour les informations
+                admin.Nom_admin = nomAdmin;
+                admin.Identifiant = identifiant;
+                
+                // Mettre à jour le mot de passe seulement si un nouveau est fourni
+                if (!string.IsNullOrEmpty(nouveauMotDePasse))
+                {
+                    admin.Mot_de_passe = nouveauMotDePasse;
+                }
+
+                monModele.UpdateAdmin(admin);
+
+                // Mettre à jour la session
+                HttpContext.Session.SetString("AdminNom", nomAdmin);
+                HttpContext.Session.SetString("AdminIdentifiant", identifiant);
+
+                TempData["MessageSucces"] = "Profil mis à jour avec succès.";
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.MessageErreur = "Erreur lors de la mise à jour : " + ex.Message;
+                return RechargerProfil(adminId.Value);
+            }
+        }
+
+        // Méthode helper pour recharger le profil en cas d'erreur
+        private IActionResult RechargerProfil(int adminId)
+        {
+            try
+            {
+                Modele monModele = new Modele(serveur, bdd, user, mdp);
+                Admin admin = monModele.SelectAdminById(adminId);
+                ViewBag.Admin = admin;
+            }
+            catch { }
+            return View();
+        }
+
         // ===== POST : Supprimer le compte =====
         [HttpPost]
         public IActionResult DeleteAccount()
