@@ -1,9 +1,38 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 
 namespace Strikeo_Admin.Controllers
 {
     public class JoueursController : Controller
     {
+        // Regex pour validation email
+        private static readonly Regex EmailRegex = new Regex(
+            @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+            RegexOptions.Compiled);
+        
+        // Regex pour validation téléphone (formats français et internationaux)
+        private static readonly Regex TelephoneRegex = new Regex(
+            @"^(\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{2,4}[-.\s]?\d{2,4}[-.\s]?\d{0,4}$",
+            RegexOptions.Compiled);
+
+        // Méthode de validation email
+        private bool EstEmailValide(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return false;
+            return EmailRegex.IsMatch(email);
+        }
+
+        // Méthode de validation téléphone
+        private bool EstTelephoneValide(string telephone)
+        {
+            if (string.IsNullOrWhiteSpace(telephone)) return false;
+            // Retirer les espaces pour la validation
+            string telNettoye = telephone.Replace(" ", "").Replace("-", "").Replace(".", "");
+            // Vérifier que c'est principalement des chiffres (avec éventuellement un + au début)
+            return telNettoye.Length >= 8 && telNettoye.Length <= 15 && 
+                   Regex.IsMatch(telNettoye, @"^\+?\d+$");
+        }
+
         // Connexion BDD
         private readonly string serveur = "127.0.0.1";
         private readonly string bdd = "strikeo_admin";
@@ -58,6 +87,20 @@ namespace Strikeo_Admin.Controllers
 
             Modele monModele = new Modele(serveur, bdd, user, mdp);
 
+            // Validation de l'email
+            if (!EstEmailValide(mail))
+            {
+                ViewBag.MessageErreur = "L'adresse email n'est pas valide.";
+                return RechargerVueAjouter(monModele);
+            }
+
+            // Validation du téléphone
+            if (!EstTelephoneValide(telephone))
+            {
+                ViewBag.MessageErreur = "Le numéro de téléphone n'est pas valide (8 à 15 chiffres).";
+                return RechargerVueAjouter(monModele);
+            }
+
             // Vérifier si l'équipe est complète (seulement si une équipe est sélectionnée)
             if (idEquipe.HasValue)
             {
@@ -89,6 +132,23 @@ namespace Strikeo_Admin.Controllers
             monModele.InsertJoueur(nouveauJoueur);
 
             return RedirectToAction("Index");
+        }
+
+        // Helper pour recharger la vue Ajouter avec les équipes
+        private IActionResult RechargerVueAjouter(Modele monModele)
+        {
+            var lesEquipes = monModele.SelectAllEquipes("");
+            ViewBag.LesEquipes = lesEquipes;
+            
+            Dictionary<int, int> placesDisponibles = new Dictionary<int, int>();
+            foreach (var eq in lesEquipes)
+            {
+                int joueurs = monModele.CountJoueursByEquipe(eq.Idequipe);
+                placesDisponibles[eq.Idequipe] = eq.Nb_joueur - joueurs;
+            }
+            ViewBag.PlacesDisponibles = placesDisponibles;
+            
+            return View();
         }
 
         // ===== GET : Formulaire de modification =====
@@ -135,6 +195,20 @@ namespace Strikeo_Admin.Controllers
             
             // Récupérer le joueur actuel pour vérifier si l'équipe change
             Joueur joueurActuel = monModele.SelectJoueurById(id);
+
+            // Validation de l'email
+            if (!EstEmailValide(mail))
+            {
+                ViewBag.MessageErreur = "L'adresse email n'est pas valide.";
+                return RechargerVueModifier(monModele, joueurActuel);
+            }
+
+            // Validation du téléphone
+            if (!EstTelephoneValide(telephone))
+            {
+                ViewBag.MessageErreur = "Le numéro de téléphone n'est pas valide (8 à 15 chiffres).";
+                return RechargerVueModifier(monModele, joueurActuel);
+            }
             
             // Si l'équipe change et qu'une nouvelle équipe est sélectionnée, vérifier si elle a de la place
             if (joueurActuel != null && idEquipe.HasValue && joueurActuel.Idequipe != idEquipe)
@@ -175,6 +249,31 @@ namespace Strikeo_Admin.Controllers
             monModele.UpdateJoueur(joueurModifie);
 
             return RedirectToAction("Index");
+        }
+
+        // Helper pour recharger la vue Modifier avec les équipes
+        private IActionResult RechargerVueModifier(Modele monModele, Joueur joueur)
+        {
+            var lesEquipes = monModele.SelectAllEquipes("");
+            ViewBag.LesEquipes = lesEquipes;
+            
+            Dictionary<int, int> placesDisponibles = new Dictionary<int, int>();
+            foreach (var eq in lesEquipes)
+            {
+                int joueurs = monModele.CountJoueursByEquipe(eq.Idequipe);
+                if (joueur != null && joueur.Idequipe.HasValue && eq.Idequipe == joueur.Idequipe.Value)
+                {
+                    placesDisponibles[eq.Idequipe] = eq.Nb_joueur - joueurs + 1;
+                }
+                else
+                {
+                    placesDisponibles[eq.Idequipe] = eq.Nb_joueur - joueurs;
+                }
+            }
+            ViewBag.PlacesDisponibles = placesDisponibles;
+            ViewBag.Joueur = joueur;
+            
+            return View();
         }
 
         // ===== GET : Supprimer =====
